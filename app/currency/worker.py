@@ -1,20 +1,18 @@
 from celery import Celery
-from fastapi import Depends
-from app.currency.services import CurrencyService
-from settings.base import settings
-from sqlmodel.ext.asyncio.session import AsyncSession
-from sqlalchemy.pool import NullPool
-from app.currency.models import Currency
-from app.db import get_session
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine, engine_from_config, select, update
+from sqlmodel.ext.asyncio.session import AsyncSession
+
+from app.currency.models import Currency
+from app.currency.services import CurrencyService
 from app.db import ASYNC_DATABASE_URI, engine
+from settings.base import settings
 
 celery_app = Celery("tasks", broker=settings.CELERY_BROKER_URL, backend=settings.CELERY_RESULT_BACKEND)
 
 currency_service = CurrencyService()
 
 session = sessionmaker(ASYNC_DATABASE_URI, class_=AsyncSession, expire_on_commit=False)
+
 
 @celery_app.task
 async def save_currencies_to_db():

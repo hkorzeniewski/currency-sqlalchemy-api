@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import condecimal
 from sqlmodel import Field, SQLModel
 
