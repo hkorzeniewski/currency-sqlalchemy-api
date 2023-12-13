@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     DB_NAME: str = Field(env="DB_NAME")
 
     TIMEOUT: int = Field(env="TIMEOUT", default=120)
-    WORKERS: int = Field(env="NUMBER_OF_WORKER_LOCALS", default=2)
+    WORKERS: int = Field(env="NUMBER_OF_WORKER_LOCALS", default=1)
     RELOAD: bool = Field(env="RELOAD", default=False)
 
     CORS_ORIGINS: str = Field(env="CORS_ORIGINS", default="localhost")

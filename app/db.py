@@ -1,3 +1,4 @@
+from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
@@ -11,6 +12,8 @@ DATABASE_URI = (
 ASYNC_DATABASE_URI: str = f"postgresql+asyncpg://{DATABASE_URI}"
 
 engine = create_async_engine(ASYNC_DATABASE_URI, poolclass=NullPool, echo=True)
+
+sync_engine = create_engine(f"postgresql://{DATABASE_URI}", echo=True)
 
 
 async def init_db():

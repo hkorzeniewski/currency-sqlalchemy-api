@@ -20,6 +20,9 @@ sentry-sdk = {extras = ["fastapi"], version = "^1.31.0"}
 greenlet = "^3.0.0"
 celery = "^5.3.6"
 redis = "^5.0.1"
+pugsql = "^0.2.4"
+fastapi-utils = "^0.2.1"
+psycopg2 = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]

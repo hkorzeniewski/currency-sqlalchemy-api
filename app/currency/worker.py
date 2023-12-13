@@ -1,36 +1,47 @@
 from celery import Celery
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlmodel.ext.asyncio.session import AsyncSession
 
+from app.core.logs import logger
 from app.currency.models import Currency
 from app.currency.services import CurrencyService
-from app.db import ASYNC_DATABASE_URI, engine
+from app.db import DATABASE_URI
 from settings.base import settings
 
 celery_app = Celery("tasks", broker=settings.CELERY_BROKER_URL, backend=settings.CELERY_RESULT_BACKEND)
 
 currency_service = CurrencyService()
 
-session = sessionmaker(ASYNC_DATABASE_URI, class_=AsyncSession, expire_on_commit=False)
+sync_engine = create_engine(f"postgresql://{DATABASE_URI}", echo=True)
+SyncSessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=sync_engine,
+)
 
 
 @celery_app.task
-async def save_currencies_to_db():
+def save_currencies_to_db():
     currencies = currency_service.prepare_currencies_to_db()
     currencies_to_db = [Currency(**currency) for currency in currencies]
-    session.add(currencies_to_db)
-    await session.commit()
+    with SyncSessionLocal() as session:
+        is_data_in_db = session.query(Currency).all()
+        if is_data_in_db:
+            return {"message": "Data already in db"}
+        session.add_all(currencies_to_db)
+        session.commit()
+    currency_service.save_all_currencies_to_csv_file(currencies)
     return currencies
 
 
 @celery_app.task
-async def save_today_currencies_to_db():
+def save_today_currencies_to_db():
     try:
         eur_pln = currency_service.get_today_currency_rate("eur")
         usd_pln = currency_service.get_today_currency_rate("usd")
         chf_pln = currency_service.get_today_currency_rate("chf")
-        eur_usd = eur_pln["mid"] / usd_pln["mid"]
-        chf_usd = chf_pln["mid"] / usd_pln["mid"]
+        eur_usd = round(eur_pln["mid"] / usd_pln["mid"], 4)
+        chf_usd = round(chf_pln["mid"] / usd_pln["mid"], 4)
     except BaseException as e:
         print(e)
         raise {"message": "Error during fetching data from API"}
@@ -40,15 +51,10 @@ async def save_today_currencies_to_db():
         chf_pln=chf_pln["mid"],
         eur_usd=eur_usd,
         chf_usd=chf_usd,
+        rate_date=eur_pln["effectiveDate"],
     )
-    print(currency)
-    with AsyncSession(engine) as session:
+    logger.info(currency)
+    with SyncSessionLocal() as session:
         session.add(currency)
-        await session.commit()
-        await session.refresh(currency)
-
-    return currency
-
-
-if __name__ == "__main__":
-    celery_app.start()
+        session.commit()
+    return {"message": "Data saved to db"}

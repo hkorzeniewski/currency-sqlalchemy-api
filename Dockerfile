@@ -15,4 +15,3 @@ WORKDIR /code
 COPY --from=requirements /tmp/requirements.txt /code/requirements.txt
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 COPY . /code
-CMD ["bash", "-c", "alembic upgrade head && gunicorn -c settings/gunicorn.conf.py app.main:app"]
