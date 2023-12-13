@@ -5,8 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncEngine
 from sqlmodel import SQLModel, create_engine
 
 from alembic import context
-from app.db import ASYNC_DATABASE_URI
 from app.currency.models import *  # NOQA All models that needs to be migrated should be added
+from app.db import ASYNC_DATABASE_URI
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

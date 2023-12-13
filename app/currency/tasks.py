@@ -13,7 +13,6 @@ celery_app.conf.beat_schedule = {
         "task": "app.currency.worker.save_today_currencies_to_db",
         "schedule": crontab("*/2"),
     },
-    
 }
 
 celery_app.conf.timezone = "UTC"

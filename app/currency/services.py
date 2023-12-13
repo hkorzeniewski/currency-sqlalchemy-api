@@ -4,7 +4,7 @@ import json
 
 import requests
 
-from app.currency.utils import convert_data_to_list
+from app.currency.utils import convert_data_to_list, generate_csv_string_from_dict
 
 
 class CurrencyService:
@@ -20,7 +20,6 @@ class CurrencyService:
         response = requests.get(self.api_url + f"rates/a/eur/last/{counter}/")
         data = json.loads(response.text)
         return data["rates"]
-
 
     def get_currency_rate(self, currency_code: str, counter):
         response = requests.get(self.api_url + f"rates/a/{currency_code}/last/{counter}/")
@@ -60,10 +59,17 @@ class CurrencyService:
             )
         ]
         return data_to_insert
-        # return tuple(eur_pln), tuple(usd_pln), tuple(chf_pln), tuple(eur_usd), tuple(chf_usd), tuple(rate_dates)
 
-    def make_query_sql_insert(self, values_list: list):
-        sql_query = "INSERT INTO currencies (eur_pln) VALUES "
-        for value in values_list:
-            sql_query += f"({value}),"
-        return sql_query
+    def save_all_currencies_to_csv_file(self, currencies: dict, filename: str = "all_currency_data.csv"):
+        with open(filename, "w") as f:
+            f.write("rate_date,eur_pln,usd_pln,chf_pln,eur_usd,chf_usd\n")
+            for currency in currencies:
+                f.write(
+                    f"{currency['rate_date']},{currency['eur_pln']},{currency['usd_pln']},{currency['chf_pln']},{currency['eur_usd']},{currency['chf_usd']}\n"
+                )
+
+    def save_specific_currencies_to_csv_file(self, currencies: list, columns: list, filename: str):
+        with open(f"{filename}_currency_data.csv", "w") as f:
+            f.write(f'{",".join(column for column in columns)}\n')
+            for currency in currencies:
+                f.write(f"{generate_csv_string_from_dict(currency, columns)}\n")
