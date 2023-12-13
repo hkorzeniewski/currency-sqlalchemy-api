@@ -1,4 +1,4 @@
-from fastapi import APIRouter, BackgroundTasks, Depends, Query, Request
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, Request
 
 from typing import Annotated
 
@@ -46,7 +46,7 @@ async def get_today_currency(session: AsyncSession = Depends(get_session), curre
         logger.info(eur_usd)
     except BaseException as e:
         print(e)
-        raise {"message": "Error during fetching data from API"}
+        raise HTTPException(status_code=404, detail=f"Error during fetching data from API {e}")
     currency = Currency(
         eur_pln=eur_pln["mid"],
         usd_pln=usd_pln["mid"],
@@ -66,8 +66,12 @@ async def get_currency_data(
     session: AsyncSession = Depends(get_session),
     currency_code: CurrencyCodeEnum = "eur_pln",
 ):
+    if currency_code not in CurrencyCodeEnum:
+        raise HTTPException(status_code=404, detail="Data not found")
     financial_data = await session.execute(select(Currency.rate_date, getattr(Currency, currency_code)))
     financial_data = financial_data.all()
+    if not financial_data:
+        raise HTTPException(status_code=404, detail="Data not found")
     return financial_data
 
 
@@ -76,6 +80,8 @@ async def get_many_currency_data(
     selected_columns: Annotated[list[CurrencyCodeEnum] | None, Query()] = None,
     session: AsyncSession = Depends(get_session),
 ):
+    if not selected_columns:
+        raise HTTPException(status_code=422, detail="No columns selected")
     selected_columns.append("rate_date")
     columns = [getattr(Currency, column) for column in selected_columns]
     financial_data = await session.execute(select(*columns))
@@ -89,6 +95,8 @@ async def get_many_currency_data_save_to_csv(
     selected_columns: Annotated[list[CurrencyCodeEnum] | None, Query()] = None,
     session: AsyncSession = Depends(get_session),
 ):
+    if not selected_columns:
+        raise HTTPException(status_code=422, detail="No columns selected")
     filename_csv = "_".join(column for column in selected_columns)
     logger.info(filename_csv)
     selected_columns.append("rate_date")
