@@ -62,10 +62,10 @@ class CurrencyService:
 
     def save_all_currencies_to_csv_file(self, currencies: dict, filename: str = "all_currency_data.csv"):
         with open(filename, "w") as f:
-            f.write("rate_date,eur_pln,usd_pln,chf_pln,eur_usd,chf_usd\n")
+            f.write("eur_pln,usd_pln,chf_pln,eur_usd,chf_usd,rate_date\n")
             for currency in currencies:
                 f.write(
-                    f"{currency['rate_date']},{currency['eur_pln']},{currency['usd_pln']},{currency['chf_pln']},{currency['eur_usd']},{currency['chf_usd']}\n"
+                    f"{currency['eur_pln']},{currency['usd_pln']},{currency['chf_pln']},{currency['eur_usd']},{currency['chf_usd']},{currency['rate_date']}\n"
                 )
 
     def save_specific_currencies_to_csv_file(self, currencies: list, columns: list, filename: str):

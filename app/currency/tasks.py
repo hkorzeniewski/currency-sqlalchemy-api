@@ -8,10 +8,17 @@ celery_app = Celery(
 )
 
 
+# celery_app.conf.beat_schedule = {
+#     "save_today_currencies_to_db": {
+#         "task": "app.currency.worker.save_today_currencies_to_db",
+#         "schedule": crontab("*/1"),
+#     },
+# }
+
 celery_app.conf.beat_schedule = {
     "save_today_currencies_to_db": {
         "task": "app.currency.worker.save_today_currencies_to_db",
-        "schedule": crontab("*/2"),
+        "schedule": crontab(hour=17, minute=0),
     },
 }
 
