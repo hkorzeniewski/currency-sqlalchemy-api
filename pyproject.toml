@@ -13,9 +13,7 @@ alembic = "^1.11.1"
 sqlmodel = "^0.0.8"
 asyncpg = "^0.28.0"
 python-dotenv = "^1.0.0"
-propelauth-fastapi = "^2.1.4"
 stripe = "^6.2.0"
-sendgrid = "^6.10.0"
 sentry-sdk = {extras = ["fastapi"], version = "^1.31.0"}
 greenlet = "^3.0.0"
 celery = "^5.3.6"
@@ -23,6 +21,7 @@ redis = "^5.0.1"
 pugsql = "^0.2.4"
 fastapi-utils = "^0.2.1"
 psycopg2 = "^2.9.9"
+trio = "^0.23.2"
 
 
 [tool.poetry.group.dev.dependencies]
