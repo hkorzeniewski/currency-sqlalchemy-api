@@ -2,9 +2,12 @@ from celery import Celery
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from app.core.logs import logger
 from app.currency.models import Currency
 from app.currency.services import CurrencyService
+from app.currency.utils import (
+    save_all_currencies_to_csv_file,
+    save_new_line_to_csv_file,
+)
 from app.db import DATABASE_URI
 from settings.base import settings
 
@@ -30,7 +33,7 @@ def save_currencies_to_db():
             return {"message": "Data already in db"}
         session.add_all(currencies_to_db)
         session.commit()
-    currency_service.save_all_currencies_to_csv_file(currencies)
+    save_all_currencies_to_csv_file(currencies, filename="/code/all_currency_data.csv")
     return currencies
 
 
@@ -45,16 +48,16 @@ def save_today_currencies_to_db():
     except BaseException as e:
         print(e)
         raise {"message": "Error during fetching data from API"}
-    currency = Currency(
-        eur_pln=eur_pln["mid"],
-        usd_pln=usd_pln["mid"],
-        chf_pln=chf_pln["mid"],
-        eur_usd=eur_usd,
-        chf_usd=chf_usd,
-        rate_date=eur_pln["effectiveDate"],
-    )
-    logger.info(currency)
+    currency = {
+        "eur_pln": eur_pln["mid"],
+        "usd_pln": usd_pln["mid"],
+        "chf_pln": chf_pln["mid"],
+        "eur_usd": eur_usd,
+        "chf_usd": chf_usd,
+        "rate_date": eur_pln["effectiveDate"],
+    }
     with SyncSessionLocal() as session:
-        session.add(currency)
+        session.add(Currency(**currency))
         session.commit()
+    save_new_line_to_csv_file(currency, "/code/all_currency_data.csv")
     return {"message": "Data saved to db"}

@@ -10,6 +10,10 @@ from app.currency.constants import CurrencyCodeEnum
 from app.currency.models import Currency
 from app.currency.services import CurrencyService
 from app.currency.statistics import calculate_average, calculate_max_value, calculate_min_value
+from app.currency.utils import (
+    save_new_line_to_csv_file,
+    save_specific_currencies_to_csv_file,
+)
 from app.db import get_session
 
 router = APIRouter(tags=["currency"])
@@ -58,6 +62,7 @@ async def get_today_currency(session: AsyncSession = Depends(get_session), curre
     logger.info(currency)
     session.add(currency)
     await session.commit()
+    save_new_line_to_csv_file(currency, "all_currency_data.csv")
     return currency
 
 
@@ -103,9 +108,7 @@ async def get_many_currency_data_save_to_csv(
     columns = [getattr(Currency, column) for column in selected_columns]
     financial_data = await session.execute(select(*columns))
     financial_data = financial_data.all()
-    background_tasks.add_task(
-        currency_service.save_specific_currencies_to_csv_file, financial_data, selected_columns, filename_csv
-    )
+    background_tasks.add_task(save_specific_currencies_to_csv_file, financial_data, selected_columns, filename_csv)
     return {"message": f"File {filename_csv}_currency_data.csv saved"}
 
 
