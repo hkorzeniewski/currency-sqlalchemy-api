@@ -33,7 +33,7 @@ def save_currencies_to_db():
             return {"message": "Data already in db"}
         session.add_all(currencies_to_db)
         session.commit()
-    save_all_currencies_to_csv_file(currencies, filename="/code/all_currency_data.csv")
+    save_all_currencies_to_csv_file(currencies, filename="all_currency_data.csv")
     return currencies
 
 
@@ -59,5 +59,5 @@ def save_today_currencies_to_db():
     with SyncSessionLocal() as session:
         session.add(Currency(**currency))
         session.commit()
-    save_new_line_to_csv_file(currency, "/code/all_currency_data.csv")
+    save_new_line_to_csv_file(currency, "all_currency_data.csv")
     return {"message": "Data saved to db"}

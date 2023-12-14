@@ -11,14 +11,14 @@ celery_app = Celery(
 # celery_app.conf.beat_schedule = {
 #     "save_today_currencies_to_db": {
 #         "task": "app.currency.worker.save_today_currencies_to_db",
-#         "schedule": crontab("*/1"),
+#         "schedule": crontab("*/3"),
 #     },
 # }
 
 celery_app.conf.beat_schedule = {
     "save_today_currencies_to_db": {
         "task": "app.currency.worker.save_today_currencies_to_db",
-        "schedule": crontab(hour=12, minute=0),
+        "schedule": crontab(hour=12, minute=27),
     },
 }
 

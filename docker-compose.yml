@@ -44,7 +44,7 @@ services:
       context: .
     command: celery -A app.currency.tasks.celery_app beat --loglevel=info
     volumes:
-      - .:/usr/src/app
+      - .:/code/
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -58,7 +58,7 @@ services:
       context: .
     command: celery -A app.currency.worker.celery_app worker --loglevel=info
     volumes:
-      - .:/usr/src/app
+      - .:/code/
     environment:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
