@@ -1,4 +1,4 @@
-# currency-api
+# currency-sqlalchemy-api
 
 # API Documentation
 
