@@ -162,12 +162,12 @@ GET /api/v1/currencies/select_one?currency_code=usd_eur
 
 #### Example: Get Financial Data for Multiple Currencies
 ```http
-GET /api/v1/currencies/select_many?selected_columns=usd_eur,gbp_usd
+GET /api/v1/currencies/select_many?selected_columns=usd_eur&selected_columns=gbp_usd
 ```
 
 #### Example: Save Financial Data for Multiple Currencies to CSV
 ```http
-GET /api/v1/currencies/select_many/save_to_csv?selected_columns=usd_eur,gbp_usd
+GET /api/v1/currencies/select_many/save_to_csv?selected_columns=usd_eur&selected_columns=gbp_usd
 ```
 
 #### Example: Get Average Currency Rate
