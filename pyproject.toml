@@ -22,6 +22,7 @@ pugsql = "^0.2.4"
 fastapi-utils = "^0.2.1"
 psycopg2 = "^2.9.9"
 trio = "^0.23.2"
+pandas = "^2.1.4"
 
 
 [tool.poetry.group.dev.dependencies]

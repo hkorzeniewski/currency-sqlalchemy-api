@@ -1,3 +1,4 @@
+import statistics
 from decimal import Decimal
 from typing import List
 
@@ -34,3 +35,11 @@ def calculate_min_value(data: List[tuple]) -> Decimal:
 
     min_value = min(item[0] for item in data)
     return min_value
+
+
+def calculate_median(data: List[tuple]) -> Decimal:
+    if not data:
+        return Decimal("0.0")
+
+    median = statistics.median(item[0] for item in data)
+    return median
