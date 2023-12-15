@@ -1,6 +1,8 @@
 import csv
 from datetime import datetime
 
+import pandas as pd
+
 
 def convert_data_to_list(data: list, parameter: str = "mid"):
     rate_list = []
@@ -54,6 +56,21 @@ def save_new_line_to_csv_file(data: dict, filename: str):
         writer.writerow(
             [data["eur_pln"], data["usd_pln"], data["chf_pln"], data["eur_usd"], data["chf_usd"], data["rate_date"]]
         )
+
+
+def save_all_currencies_to_csv_file_pandas(currencies: list, columns: list, filename: str = "all_currency_data.csv"):
+    df = pd.DataFrame(currencies, columns=columns)
+    df.to_csv(f"files/{filename}", index=False)
+
+
+def save_specific_currencies_to_csv_file_pandas(currencies: list, columns: list, filename: str):
+    df = pd.DataFrame(currencies, columns=columns)
+    df.to_csv(f"files/{filename}_currency_data.csv", index=False)
+
+
+def save_new_line_to_csv_file_pandas(data: dict, filename: str = "all_currency_data.csv"):
+    df = pd.DataFrame(data, index=[0])
+    df.to_csv(f"files/{filename}", mode="a", index=False, header=False)
 
 
 def is_valid_date_format(start_date, end_date):
